@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var index_1 = __importDefault(require("../index"));
 var fs_1 = __importDefault(require("fs"));
 var supertest_1 = __importDefault(require("supertest"));
+var funtion_1 = __importDefault(require("../funtion"));
 var request = (0, supertest_1.default)(index_1.default);
 describe('I- A test for my endpoint', function () {
     it('1. tests the api endpoint status', function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -80,7 +81,7 @@ describe("II- Test for my application's functionality", function () {
                 '.jpg');
         })).toBeTruthy();
     });
-    it('2. test the resizing of the thumbnail image', function () {
+    it('2. tests the resizing of the thumbnail image', function () {
         index_1.default.get('/process', function testImg(req) {
             var thumbInfo = fs_1.default.statSync("./thumb/".concat(req.query.filename, "_thumb") +
                 '-' +
@@ -92,6 +93,42 @@ describe("II- Test for my application's functionality", function () {
             var imgInfo = fs_1.default.statSync("./images/".concat(req.query.filename, ".jpg"));
             var imgSize = imgInfo.size;
             expect(imgSize).toBeGreaterThan(thumbSize);
+        });
+    });
+    it('3. tests the functionality of the image resizing function.', function () {
+        index_1.default.get('/process', function testImg(req) {
+            return __awaiter(this, void 0, void 0, function () {
+                var width, height, filePath, inputImg;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            width = parseInt(req.query.width);
+                            height = parseInt(req.query.height);
+                            return [4 /*yield*/, ("./thumb/".concat(req.query.filename, "_thumb") +
+                                    '-' +
+                                    width +
+                                    'x' +
+                                    height +
+                                    '.jpg')];
+                        case 1:
+                            filePath = _a.sent();
+                            return [4 /*yield*/, "./images/".concat(req.query.filename, ".jpg")];
+                        case 2:
+                            inputImg = _a.sent();
+                            if (fs_1.default.statSync(filePath)) {
+                                fs_1.default.unlinkSync(filePath);
+                            }
+                            (0, funtion_1.default)(width, height, inputImg, filePath);
+                            expect(fs_1.default.statSync("./thumb/".concat(req.query.filename, "_thumb") +
+                                '-' +
+                                width +
+                                'x' +
+                                height +
+                                '.jpg')).toBeTruthy();
+                            return [2 /*return*/];
+                    }
+                });
+            });
         });
     });
 });

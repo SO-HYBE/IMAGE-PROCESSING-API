@@ -3,7 +3,7 @@ import logger from '../../utilities/logger';
 import fs from 'fs';
 import imgFunc from '../../funtion';
 const myApp = express.Router();
-myApp.get('/process', logger, async (req, res) => {
+myApp.get('/process', logger, async (req, res): Promise<void> => {
     const filename = req.query.filename;
     const width = parseInt(req.query.width as string);
     const height = parseInt(req.query.height as string);
@@ -24,12 +24,12 @@ myApp.get('/process', logger, async (req, res) => {
         res.send('Error: Please enter a valid width and height number.');
     } else {
         if (!fs.existsSync(outputFile)) {
-            imgFunc(width, height, inputFile, outputFile).then(() => {
-                setTimeout(() => {
+            imgFunc(width, height, inputFile, outputFile).then((): void => {
+                setTimeout((): void => {
                     res.status(200).sendFile(
                         outputFile,
                         { root: './' },
-                        (err) => {
+                        (err): void => {
                             if (err) {
                                 console.log(err);
                             }
@@ -39,12 +39,16 @@ myApp.get('/process', logger, async (req, res) => {
                 }, 300);
             });
         } else {
-            res.status(200).sendFile(outputFile, { root: './' }, (err) => {
-                if (err) {
-                    console.log(err);
+            res.status(200).sendFile(
+                outputFile,
+                { root: './' },
+                (err): void => {
+                    if (err) {
+                        console.log(err);
+                    }
+                    return;
                 }
-                return;
-            });
+            );
         }
     }
 });

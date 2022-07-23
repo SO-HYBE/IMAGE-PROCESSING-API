@@ -5,7 +5,7 @@ async function imgFunc(
     height: number,
     input: string,
     output: string
-) {
+): Promise<undefined | string> {
     try {
         sharp(input)
             .resize(width as unknown as number, height as unknown as number)

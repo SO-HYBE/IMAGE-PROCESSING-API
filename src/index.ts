@@ -6,7 +6,7 @@ const port = 3000;
 
 app.use('/', logger, routes);
 
-app.listen(port, () => {
+app.listen(port, (): void => {
     console.log(`https://localhost:${port}`);
 });
 
