@@ -39,59 +39,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = __importDefault(require("../index"));
+var express_1 = __importDefault(require("express"));
+var logger_1 = __importDefault(require("../../utilities/logger"));
 var fs_1 = __importDefault(require("fs"));
-var supertest_1 = __importDefault(require("supertest"));
-var request = (0, supertest_1.default)(index_1.default);
-describe('I- A test for my endpoint', function () {
-    it('1. tests the api endpoint status', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var response;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('/')];
-                case 1:
-                    response = _a.sent();
-                    expect(response.status).toBe(200);
-                    return [2 /*return*/];
+var funtion_1 = __importDefault(require("../../funtion"));
+var myApp = express_1.default.Router();
+myApp.get('/process', logger_1.default, function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var filename, width, height, inputFile, outputFile;
+    return __generator(this, function (_a) {
+        filename = req.query.filename;
+        width = parseInt(req.query.width);
+        height = parseInt(req.query.height);
+        inputFile = "./images/".concat(filename, ".jpg");
+        outputFile = "./thumb/".concat(filename, "_thumb") + '-' + width + 'x' + height + '.jpg';
+        if (!fs_1.default.existsSync(inputFile)) {
+            res.send("Error: This image doesn't exist.");
+        }
+        else if (isNaN(width) && isNaN(height)) {
+            res.send('Error: Please enter a number as the width and the height parameters.');
+        }
+        else if (!width || !height || !filename) {
+            res.send('Error: Please make sure that you entered the width, height, and filename to complete the process.');
+        }
+        else if (width < 0 || height < 0) {
+            res.send('Error: Please enter a valid width and height number.');
+        }
+        else {
+            if (!fs_1.default.existsSync(outputFile)) {
+                (0, funtion_1.default)(width, height, inputFile, outputFile).then(function () {
+                    setTimeout(function () {
+                        res.status(200).sendFile(outputFile, { root: './' }, function (err) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            return;
+                        });
+                    }, 300);
+                });
             }
-        });
-    }); });
-    it('2. tests successful access to the api endpoint ', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var response;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('/')];
-                case 1:
-                    response = _a.sent();
-                    expect(response.status === 400).toBeFalsy();
-                    return [2 /*return*/];
+            else {
+                res.status(200).sendFile(outputFile, { root: './' }, function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    return;
+                });
             }
-        });
-    }); });
-});
-describe("II- Test for my application's functionality", function () {
-    it('1. tests the availability of the thumbnail image in the thumb folder', function () {
-        expect(index_1.default.get('/process', function (req) {
-            return fs_1.default.readdirSync("./thumb/".concat(req.query.filename, "_thumb") +
-                '-' +
-                req.query.width +
-                'x' +
-                req.query.height +
-                '.jpg');
-        })).toBeTruthy();
+        }
+        return [2 /*return*/];
     });
-    it('2. test the resizing of the thumbnail image', function () {
-        index_1.default.get('/process', function testImg(req) {
-            var thumbInfo = fs_1.default.statSync("./thumb/".concat(req.query.filename, "_thumb") +
-                '-' +
-                req.query.width +
-                'x' +
-                req.query.height +
-                '.jpg');
-            var thumbSize = thumbInfo.size;
-            var imgInfo = fs_1.default.statSync("./images/".concat(req.query.filename, ".jpg"));
-            var imgSize = imgInfo.size;
-            expect(imgSize).toBeGreaterThan(thumbSize);
-        });
-    });
-});
+}); });
+exports.default = myApp;

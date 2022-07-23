@@ -35,63 +35,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_1 = __importDefault(require("../index"));
-var fs_1 = __importDefault(require("fs"));
-var supertest_1 = __importDefault(require("supertest"));
-var request = (0, supertest_1.default)(index_1.default);
-describe('I- A test for my endpoint', function () {
-    it('1. tests the api endpoint status', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var response;
+function pathFinder(path) {
+    return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('/')];
-                case 1:
-                    response = _a.sent();
-                    expect(response.status).toBe(200);
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-    it('2. tests successful access to the api endpoint ', function () { return __awaiter(void 0, void 0, void 0, function () {
-        var response;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, request.get('/')];
-                case 1:
-                    response = _a.sent();
-                    expect(response.status === 400).toBeFalsy();
-                    return [2 /*return*/];
-            }
-        });
-    }); });
-});
-describe("II- Test for my application's functionality", function () {
-    it('1. tests the availability of the thumbnail image in the thumb folder', function () {
-        expect(index_1.default.get('/process', function (req) {
-            return fs_1.default.readdirSync("./thumb/".concat(req.query.filename, "_thumb") +
-                '-' +
-                req.query.width +
-                'x' +
-                req.query.height +
-                '.jpg');
-        })).toBeTruthy();
-    });
-    it('2. test the resizing of the thumbnail image', function () {
-        index_1.default.get('/process', function testImg(req) {
-            var thumbInfo = fs_1.default.statSync("./thumb/".concat(req.query.filename, "_thumb") +
-                '-' +
-                req.query.width +
-                'x' +
-                req.query.height +
-                '.jpg');
-            var thumbSize = thumbInfo.size;
-            var imgInfo = fs_1.default.statSync("./images/".concat(req.query.filename, ".jpg"));
-            var imgSize = imgInfo.size;
-            expect(imgSize).toBeGreaterThan(thumbSize);
+            return [2 /*return*/, new Promise(function (resolve) {
+                    setTimeout(function () {
+                        resolve(path);
+                    }, 300);
+                })];
         });
     });
-});
+}
+exports.default = pathFinder;
